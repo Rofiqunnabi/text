@@ -1,0 +1,188 @@
+// File Name: EmployeeManager.java
+import java.io.*;
+import java.util.*;
+
+public class EmployeeManager {
+
+    public static void main(String[] args) {
+        // Task 2: Validate argument count
+        if (args.length != 1) {
+            System.err.println("Error: Invalid number of arguments."); // Added error message
+            System.out.println("Usage: java EmployeeManager <command>");
+            return; // Added termination for invalid arguments
+        }
+
+        String command = args[0];
+
+        // Task 9: Improved handling for invalid arguments using a switch-case structure
+        switch (command.charAt(0)) {
+            case 'l':
+                loadAndDisplayEmployees(); // Task 4: Centralized file operations
+                break;
+
+            case 's':
+                showRandomEmployee(); // Task 4: Centralized file operations
+                break;
+
+            case '+':
+                addNewEmployee(command.substring(1)); // Task 3: Improved variable naming
+                break;
+
+            case '?':
+                searchEmployee(command.substring(1)); // Task 7: Simplified search logic
+                break;
+
+            case 'c':
+                countWordsInFile(); // Task 8: Simplified count logic
+                break;
+
+            case 'u':
+                updateEmployee(command.substring(1)); // Task 7: Simplified update logic
+                break;
+
+            // case 'd':
+            //     deleteEmployee(command.substring(1)); // Task 7: Simplified delete logic
+            //     break;
+
+            default:
+                System.err.println("Error: Invalid command."); // Task 9: Error handling for invalid commands
+                System.out.println("Available commands: l, s, +<name>, ?<name>, c, u<name>");
+        }
+    }
+
+    // Task 4: Utility method to read file content
+    private static String readFile() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(Constants.FILE_PATH)); // Task 5: Using Constants class
+        String content = reader.readLine();
+        reader.close();
+        return content;
+    }
+
+    // Task 4: Utility method to write content to the file
+    private static void writeFile(String content) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.FILE_PATH)); // Task 5: Using Constants class
+        writer.write(content);
+        writer.close();
+    }
+
+    // Task 1: Load and display all employees
+    private static void loadAndDisplayEmployees() {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            String[] employees = content.split(",");
+            for (String employee : employees) {
+                System.out.println(employee.trim()); // Task 6: Removed unnecessary temporary variables
+            }
+        } catch (IOException e) {
+            System.err.println("Error: Unable to load data."); // Task 9: Added error handling
+        }
+        System.out.println("Data loaded.");
+    }
+
+    // Task 1: Show a random employee
+    private static void showRandomEmployee() {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            String[] employees = content.split(",");
+            Random random = new Random();
+            int index = random.nextInt(employees.length); // Task 3: Improved variable naming
+            System.out.println("Random Employee: " + employees[index].trim());
+        } catch (IOException e) {
+            System.err.println("Error: Unable to load data."); // Task 9: Added error handling
+        }
+        System.out.println("Data loaded.");
+    }
+
+    // Task 1: Add a new employee
+    private static void addNewEmployee(String employeeName) {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            content = content + ", " + employeeName.trim();
+            writeFile(content); // Task 4: Using reusable writeFile method
+        } catch (IOException e) {
+            System.err.println("Error: Unable to update data."); // Task 9: Added error handling
+        }
+        System.out.println("Data updated.");// updatedList
+    }
+
+    // Task 7: Search for an employee
+    private static void searchEmployee(String employeeName) {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            String[] employees = content.split(",");
+            if (Arrays.asList(employees).contains(employeeName.trim())) { // Task 7: Simplified search logic
+                System.out.println("Employee found!");
+            } else {
+                System.out.println("Employee not found.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error: Unable to search data."); // Task 9: Added error handling
+        }
+        System.out.println("Search completed.");
+    }
+
+    // Task 8: Simplified word count logic
+    private static void countWordsInFile() {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            String[] words = content.split(","); // Task 8: Replaced character iteration with split logic
+            System.out.println(words.length + " employee(s) found."); // Task 3: Improved variable naming
+        } catch (IOException e) {
+            System.err.println("Error: Unable to count data."); // Task 9: Added error handling
+        }
+        System.out.println("Data counted.");
+    }
+
+    // Task 7: Update an employee
+    private static void updateEmployee(String employeeName) {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            String[] employees = content.split(",");
+            boolean updated = false; // Task 7: Simplified control flow for updates
+            for (int i = 0; i < employees.length; i++) {
+                if (employees[i].trim().equals(employeeName.trim())) {
+                    employees[i] = "Updated";
+                    updated = true;
+                }
+            }
+            if (updated) {
+                writeFile(String.join(",", employees)); // Task 4: Using reusable writeFile method
+                System.out.println("Employee updated.");
+            } else {
+                System.out.println("Employee not found.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error: Unable to update data."); // Task 9: Added error handling
+        }
+        System.out.println("Update completed.");
+    }
+
+    // Task 7: Delete an employee
+    private static void deleteEmployee(String employeeName) {
+        System.out.println("Loading data...");
+        try {
+            String content = readFile(); // Task 4: Using reusable readFile method
+            List<String> employees = new ArrayList<>(Arrays.asList(content.split(",")));
+            if (employees.removeIf(emp -> emp.trim().equals(employeeName.trim()))) { // Task 7: Simplified delete logic
+                writeFile(String.join(",", employees)); // Task 4: Using reusable writeFile method
+                System.out.println("Employee deleted.");
+            } else {
+                System.out.println("Employee not found.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error: Unable to delete data."); // Task 9: Added error handling
+        }
+        System.out.println("Delete completed.");
+    }
+}
+
+// Task 5: Constants class for storing reusable constants
+class Constants {
+    public static final String FILE_PATH = "employees.txt"; // Task 5: File path constant
+}
